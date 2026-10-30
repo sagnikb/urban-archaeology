@@ -424,6 +424,9 @@ def analyze(
             and quote in normalize(target_text)
         )
 
+        if not verified:
+            continue  # Skip findings not grounded in the target page.
+
         record["document"] = filename
         record["page"] = page
         record["quote_verified"] = verified
@@ -560,9 +563,9 @@ def main(
 if __name__ == "__main__":
     main(
         doc_path="./documents/d2deismarch2010.pdf",
-        start_page=5,
+        start_page=91,
         pages=1,
-        parse_mode="single",  # "single" or "context"
+        parse_mode="context",  # "single" or "context"
         context_pages=1,
         max_chars=5000,
         context_chars=2000,

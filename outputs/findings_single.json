@@ -1,91 +1,31 @@
 [
   {
     "category": "alternative",
-    "claim": "The No Build Alternative is considered",
-    "evidence_quote": "Alternatives assessed and compared in this document are a No Build Alternative and four build alternatives.",
-    "classification_reason": "The passage explicitly names the No Build Alternative as one of the alternatives assessed and compared in the document.",
+    "claim": "At-grade street and sidewalk improvements designed to create a safe and secure walking environment, to provide visual recognition of a designated pedestrian pathway, and to facilitate the movement of small shuttle vehicles between the Convention Center Hotel and the station",
+    "evidence_quote": "At-grade street and sidewalk improvements designed to create a safe and secure walking environment, to provide visual recognition of a designated pedestrian pathway, and to facilitate the movement of small shuttle vehicles between the Convention Center Hotel and the station",
+    "classification_reason": "This is a named alternative option explicitly described as one of the connection options examined for the Convention Center Hotel site.",
     "document": "d2deismarch2010.pdf",
-    "page": 5,
+    "page": 91,
     "quote_verified": true,
     "parse_mode": "single"
   },
   {
     "category": "alternative",
-    "claim": "Four build alternatives are considered",
-    "evidence_quote": "Alternatives assessed and compared in this document are a No Build Alternative and four build alternatives.",
-    "classification_reason": "The passage explicitly states that four build alternatives are considered alongside the No Build Alternative.",
+    "claim": "An elevated, enclosed pedestrian bridge, with or without an automated moving walkway to increase walk speed",
+    "evidence_quote": "An elevated, enclosed pedestrian bridge, with or without an automated moving walkway to increase walk speed",
+    "classification_reason": "This is a named alternative option explicitly described as one of the connection options examined for the Convention Center Hotel site.",
     "document": "d2deismarch2010.pdf",
-    "page": 5,
+    "page": 91,
     "quote_verified": true,
     "parse_mode": "single"
   },
   {
     "category": "alternative",
-    "claim": "The No Build Alternative consists of existing transportation facilities and services plus improvements included in the 2030 Transit System Plan and the Mobility 2030: The Metropolitan Transportation Plan for the Dallas-Ft. Worth Area",
-    "evidence_quote": "The No Build Alternative consists of existing transportation facilities and services plus those improvements included in the 2030 Transit System Plan and the Mobility 2030: The Metropolitan Transportation Plan for the Dallas-Ft. Worth Area.",
-    "classification_reason": "The passage explicitly describes what the No Build Alternative includes, providing a specific definition of this alternative.",
+    "claim": "An underground pedestrian tunnel, with or without an automated moving walkway to increase walk speed",
+    "evidence_quote": "An underground pedestrian tunnel, with or without an automated moving walkway to increase walk speed",
+    "classification_reason": "This is a named alternative option explicitly described as one of the connection options examined for the Convention Center Hotel site.",
     "document": "d2deismarch2010.pdf",
-    "page": 5,
-    "quote_verified": true,
-    "parse_mode": "single"
-  },
-  {
-    "category": "alternative",
-    "claim": "The fixed-guideway build alternatives provide additional light rail transit (LRT) capacity required to maintain continued safe and reliable operations on the DART rail network without a deterioration of service, and to accommodate planned improvements and expansion",
-    "evidence_quote": "The fixed-guideway build alternatives provide additional light rail transit (LRT) capacity required to maintain continued safe and reliable operations on the DART rail network without a deterioration of service, and to accommodate planned improvements and expansion.",
-    "classification_reason": "The passage explicitly describes the purpose and function of the fixed-guideway build alternatives, which defines what these alternatives entail.",
-    "document": "d2deismarch2010.pdf",
-    "page": 5,
-    "quote_verified": true,
-    "parse_mode": "single"
-  },
-  {
-    "category": "alternative",
-    "claim": "The alternatives are located within a 2.5-mile long corridor through downtown Dallas extending from Victory station on the Northwest line to Deep Ellum on the Southeast line",
-    "evidence_quote": "The alternatives are located within a 2.5-mile long corridor through downtown Dallas extending from Victory station on the Northwest line to Deep Ellum on the Southeast line.",
-    "classification_reason": "The passage explicitly describes the geographic location of the alternatives, which is a specific characteristic of the alternatives.",
-    "document": "d2deismarch2010.pdf",
-    "page": 5,
-    "quote_verified": true,
-    "parse_mode": "single"
-  },
-  {
-    "category": "alternative",
-    "claim": "The alternatives include tunnel and surface sections as well as underground and surface stations",
-    "evidence_quote": "The alternatives include tunnel and surface sections as well as underground and surface stations.",
-    "classification_reason": "The passage explicitly describes the physical configuration of the alternatives, which is a specific characteristic of the alternatives.",
-    "document": "d2deismarch2010.pdf",
-    "page": 5,
-    "quote_verified": true,
-    "parse_mode": "single"
-  },
-  {
-    "category": "project_objective",
-    "claim": "DART intends to seek a federal transit grant to assist in the funding of this project",
-    "evidence_quote": "DART intends to seek a federal transit grant to assist in the funding of this project.",
-    "classification_reason": "This statement explicitly states a goal or need that motivates the planning project, specifically the funding mechanism DART is pursuing.",
-    "document": "d2deismarch2010.pdf",
-    "page": 5,
-    "quote_verified": true,
-    "parse_mode": "single"
-  },
-  {
-    "category": "project_objective",
-    "claim": "The project aims to maintain continued safe and reliable operations on the DART rail network without a deterioration of service",
-    "evidence_quote": "The fixed-guideway build alternatives provide additional light rail transit (LRT) capacity required to maintain continued safe and reliable operations on the DART rail network without a deterioration of service, and to accommodate planned improvements and expansion.",
-    "classification_reason": "This is a specific objective derived from the description of the build alternatives, indicating what the project aims to achieve for the DART rail network.",
-    "document": "d2deismarch2010.pdf",
-    "page": 5,
-    "quote_verified": true,
-    "parse_mode": "single"
-  },
-  {
-    "category": "project_objective",
-    "claim": "The project aims to accommodate planned improvements and expansion",
-    "evidence_quote": "The fixed-guideway build alternatives provide additional light rail transit (LRT) capacity required to maintain continued safe and reliable operations on the DART rail network without a deterioration of service, and to accommodate planned improvements and expansion.",
-    "classification_reason": "This is a specific objective derived from the description of the build alternatives, indicating what the project aims to achieve for the future.",
-    "document": "d2deismarch2010.pdf",
-    "page": 5,
+    "page": 91,
     "quote_verified": true,
     "parse_mode": "single"
   }
