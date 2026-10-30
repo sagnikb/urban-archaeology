@@ -1,7 +1,11 @@
 
 import json
+import hashlib
 import re
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
+from importlib.metadata import PackageNotFoundError, version
 from typing import Literal
 
 import pymupdf as fitz
@@ -10,6 +14,7 @@ from pydantic import BaseModel
 
 
 MODEL = "qwen3:4b"
+SEED = 42
 
 
 # ============================================================
@@ -29,6 +34,9 @@ class Finding(BaseModel):
     claim: str
     evidence_quote: str
     classification_reason: str
+    epistemic_status: Literal["stated fact", "assumption", "projection", "procedure"]
+    attributed_to: str
+    refers_to_alternative: str
 
 
 class Extraction(BaseModel):
@@ -290,6 +298,9 @@ Each finding must contain:
 - claim
 - evidence_quote
 - classification_reason
+- epistemic_status: stated fact, assumption, projection, or procedure
+- attributed_to: named source/organization, or empty if none is stated
+- refers_to_alternative: explicit alternative identifier, or empty if none
 
 The findings list may be empty.
 
@@ -349,6 +360,7 @@ def analyze(
     target_text,
     filename,
     page,
+    printed_page_label,
     parse_mode="single",
     context_text="",
 ):
@@ -404,6 +416,7 @@ def analyze(
         format=Extraction.model_json_schema(),
         options={
             "temperature": 0,
+            "seed": SEED,
             "num_ctx": 8192,
         },
     )
@@ -424,17 +437,24 @@ def analyze(
             and quote in normalize(target_text)
         )
 
-        if not verified:
-            continue  # Skip findings not grounded in the target page.
-
         record["document"] = filename
         record["page"] = page
+        record["printed_page_label"] = printed_page_label
+        record["finding_id"] = stable_finding_id(
+            filename, page, record["category"], record["evidence_quote"]
+        )
         record["quote_verified"] = verified
         record["parse_mode"] = parse_mode
 
         records.append(record)
 
     return records
+
+
+def stable_finding_id(filename, page, category, quote):
+    import hashlib
+    key = "|".join((filename, str(page), category, normalize(quote)))
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
 
 
 # ============================================================
@@ -449,6 +469,7 @@ def main(
     context_pages=1,
     max_chars=5000,
     context_chars=2000,
+    run_name=None,
 ):
     """
     Run PDF extraction directly from VS Code.
@@ -482,10 +503,41 @@ def main(
     if not path.exists():
         raise FileNotFoundError(path)
 
-    output = Path(f"outputs/findings_{parse_mode}.json")
+    run_name = run_name or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    output = Path(f"outputs/findings_{parse_mode}_{run_name}.json")
+    verified_output = Path(f"outputs/findings_{parse_mode}_{run_name}_verified.json")
     output.parent.mkdir(parents=True, exist_ok=True)
 
     results = []
+    try:
+        ollama_version = version("ollama")
+    except PackageNotFoundError:
+        ollama_version = "unknown"
+    try:
+        ollama_server_version = chat.__self__.version()
+    except Exception:
+        ollama_server_version = "unavailable"
+    try:
+        git_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+        ).stdout.strip()
+    except Exception:
+        git_commit = "unavailable"
+    run_details = {
+        "run_id": run_name,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "pdf": path.name,
+        "pdf_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "model": MODEL,
+        "ollama_python_version": ollama_version,
+        "ollama_server_version": ollama_server_version,
+        "prompt_sha256": hashlib.sha256(SYSTEM_PROMPT.encode("utf-8")).hexdigest(),
+        "git_commit": git_commit,
+        "settings": {"start_page": start_page, "pages": pages, "parse_mode": parse_mode,
+                     "context_pages": context_pages, "max_chars": max_chars,
+                     "context_chars": context_chars, "temperature": 0, "seed": SEED,
+                     "num_ctx": 8192},
+    }
 
     with fitz.open(path) as pdf:
         start = start_page - 1
@@ -496,6 +548,7 @@ def main(
 
         for i in range(start, end):
             page = i + 1
+            printed_page_label = pdf[i].get_label() or ""
 
             target_text = get_page_text(pdf, i)
             target_text = target_text[:max_chars]
@@ -525,6 +578,7 @@ def main(
                     target_text=target_text,
                     filename=path.name,
                     page=page,
+                    printed_page_label=printed_page_label,
                     parse_mode=parse_mode,
                     context_text=context_text,
                 )
@@ -546,12 +600,21 @@ def main(
 
             # Save progress after every page.
             output.write_text(
-                json.dumps(results, indent=2, ensure_ascii=False),
+                json.dumps({"run_details": run_details, "findings": results}, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            verified_output.write_text(
+                json.dumps(
+                    {"run_details": run_details, "findings": [item for item in results if item["quote_verified"]]},
+                    indent=2,
+                    ensure_ascii=False,
+                ),
                 encoding="utf-8",
             )
 
     print(f"\nTotal findings: {len(results)}")
     print(f"Saved to: {output}")
+    print(f"Saved verified findings to: {verified_output}")
 
     return results
 
@@ -565,7 +628,7 @@ if __name__ == "__main__":
         doc_path="./documents/d2deismarch2010.pdf",
         start_page=91,
         pages=1,
-        parse_mode="context",  # "single" or "context"
+        parse_mode="single",  # "single" or "context"
         context_pages=1,
         max_chars=5000,
         context_chars=2000,

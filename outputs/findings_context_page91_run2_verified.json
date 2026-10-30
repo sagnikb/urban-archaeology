@@ -1,0 +1,25 @@
+{
+  "run_details": {
+    "run_id": "page91_run2",
+    "timestamp_utc": "2026-10-30T02:22:03.895567+00:00",
+    "pdf": "d2deismarch2010.pdf",
+    "pdf_sha256": "58212d067a112cf6ff94718ceb16ea911614f910efd397768ed3ac1d49db2e24",
+    "model": "qwen3:4b",
+    "ollama_python_version": "0.6.3",
+    "ollama_server_version": "unavailable",
+    "prompt_sha256": "7082f77c9b82a6b06d938cc24b5d8f2f2b1b9f4cb4cd13aa873601180f40d4dc",
+    "git_commit": "248f3ac6942b9a6fd7098076f9cf9aaf7a025c93",
+    "settings": {
+      "start_page": 91,
+      "pages": 1,
+      "parse_mode": "context",
+      "context_pages": 1,
+      "max_chars": 5000,
+      "context_chars": 2000,
+      "temperature": 0,
+      "seed": 42,
+      "num_ctx": 8192
+    }
+  },
+  "findings": []
+}
