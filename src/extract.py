@@ -365,6 +365,7 @@ def analyze(
     page,
     printed_page_label,
     seed=SEED,
+    temperature=0,
     parse_mode="single",
     context_text="",
 ):
@@ -419,7 +420,7 @@ def analyze(
         ],
         format=Extraction.model_json_schema(),
         options={
-            "temperature": 0,
+            "temperature": temperature,
             "seed": seed,
             "num_ctx": 8192,
         },
@@ -475,6 +476,7 @@ def main(
     context_chars=2000,
     run_name=None,
     seed=SEED,
+    temperature=0,
 ):
     """
     Run PDF extraction directly from VS Code.
@@ -541,7 +543,7 @@ def main(
         "git_commit": git_commit,
         "settings": {"start_page": start_page, "pages": pages, "parse_mode": parse_mode,
                      "context_pages": context_pages, "max_chars": max_chars,
-                     "context_chars": context_chars, "temperature": 0, "seed": seed,
+                     "context_chars": context_chars, "temperature": temperature, "seed": seed,
                      "num_ctx": 8192},
     }
     errors = []
@@ -589,6 +591,7 @@ def main(
                     page=page,
                     printed_page_label=printed_page_label,
                     seed=seed,
+                    temperature=temperature,
                     parse_mode=parse_mode,
                     context_text=context_text,
                 )
