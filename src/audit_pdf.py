@@ -54,7 +54,7 @@ def create_audit_pdf(pdf_path, findings_path, output_path, target_page=91, singl
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pdf", type=Path, default=Path("documents/d2deismarch2010.pdf"))
-    parser.add_argument("--findings", type=Path, default=Path("outputs/findings_context.json"))
+    parser.add_argument("--findings", type=Path, default=Path("outputs/findings_single_20261030T022825Z.json"))
     parser.add_argument("--output", type=Path, default=Path("outputs/page91_audit.pdf"))
     parser.add_argument("--page", type=int, default=91, help="1-indexed PDF page to audit")
     parser.add_argument("--single-page", type=int, default=None,

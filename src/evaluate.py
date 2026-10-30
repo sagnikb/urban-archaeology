@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import re
+import math
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -60,6 +61,9 @@ def evaluate(extracted, gold):
             "gold_category": manual.get("category", ""),
             "matched_gold": match_index is not None,
             "support_grade": item.get("support_grade", ""),
+            "gold_epistemic_status": manual.get("epistemic_status", ""),
+            "gold_attributed_to": manual.get("attributed_to", ""),
+            "gold_refers_to_alternative": manual.get("refers_to_alternative", ""),
         })
 
     counts = defaultdict(Counter)
@@ -88,14 +92,25 @@ def evaluate(extracted, gold):
     for row in rows:
         if row["matched_gold"] and row["gold_category"] in CATEGORIES and row["category"] in CATEGORIES:
             matrix[row["gold_category"]][row["category"]] += 1
+    for field, gold_field in (("epistemic_status", "gold_epistemic_status"),
+                              ("attributed_to", "gold_attributed_to"),
+                              ("refers_to_alternative", "gold_refers_to_alternative")):
+        correct = sum(1 for r in rows if r["matched_gold"] and normalize(str(r[field])) == normalize(str(r[gold_field])))
+        metrics[field] = {"accuracy": correct / len(rows) if rows else 0.0, "correct": correct, "total": len(rows)}
+    correct = sum(1 for r in rows if r["matched_gold"] and r["category"] == r["gold_category"])
+    metrics["overall"] = {"precision": correct / len(rows) if rows else 0.0,
+                           "recall": correct / len(gold) if gold else 0.0,
+                           "true_positives": correct, "predicted": len(rows), "gold": len(gold),
+                           "quote_verification_failure_rate": sum(r["quote_verified"] is False for r in rows) / len(rows) if rows else 0.0}
     return rows, metrics, matrix
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--extracted", type=Path, default=Path("outputs/findings_context.json"))
+    parser.add_argument("--extracted", type=Path, default=Path("outputs/findings_single_20261030T022825Z.json"))
     parser.add_argument("--gold", type=Path, default=Path("gold/page91.json"))
     parser.add_argument("--csv", type=Path, default=Path("outputs/evaluation_page91.csv"))
+    parser.add_argument("--metrics", type=Path, default=Path("outputs/metrics_page91.json"))
     args = parser.parse_args()
     extracted = json.loads(args.extracted.read_text(encoding="utf-8"))
     if isinstance(extracted, dict):
@@ -103,21 +118,35 @@ def main():
     gold = json.loads(args.gold.read_text(encoding="utf-8"))
     if isinstance(gold, dict):
         gold = gold.get("findings", [])
+    # A graded gold file can also provide human grades for matching extracted
+    # findings. Copy the gold grade onto the corresponding output row.
     rows, metrics, matrix = evaluate(extracted, gold)
+    gold_by_quote = {normalize(x.get("evidence_quote", "")): x for x in gold}
+    for row in rows:
+        match = next((x for x in gold if quotes_overlap(row["evidence_quote"], x.get("evidence_quote", ""))), None)
+        if match and match.get("support_grade") in GRADES:
+            row["support_grade"] = match["support_grade"]
     args.csv.parent.mkdir(parents=True, exist_ok=True)
-    fields = ["finding_id", "category", "claim", "evidence_quote", "classification_reason", "epistemic_status", "attributed_to", "refers_to_alternative", "document", "page", "printed_page_label", "quote_verified", "parse_mode", "gold_category", "matched_gold", "support_grade"]
+    fields = ["finding_id", "category", "claim", "evidence_quote", "classification_reason", "epistemic_status", "attributed_to", "refers_to_alternative", "document", "page", "printed_page_label", "quote_verified", "parse_mode", "gold_category", "matched_gold", "support_grade", "gold_epistemic_status", "gold_attributed_to", "gold_refers_to_alternative"]
     with args.csv.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
     print("Category metrics (exact category match among quote-overlap matches):")
-    for category, values in metrics.items():
-        print(f"{category}: precision={values['precision']:.3f} recall={values['recall']:.3f} ({values['true_positives']}/{values['predicted']} predicted, {values['gold']} gold)")
+    for category in CATEGORIES:
+        values=metrics[category]
+        precision=f"{values['precision']:.3f}" if values['predicted'] else "n/a"
+        print(f"{category}: precision={precision} recall={values['recall']:.3f} ({values['true_positives']}/{values['predicted']} predicted, {values['gold']} gold)")
+    for field in ("epistemic_status", "attributed_to", "refers_to_alternative"):
+        value=metrics[field]; print(f"{field} accuracy: {value['accuracy']:.3f} ({value['correct']}/{value['total']})")
+    print(f"Overall category precision={metrics['overall']['precision']:.3f} recall={metrics['overall']['recall']:.3f}; quote verification failure rate={metrics['overall']['quote_verification_failure_rate']:.3f}")
     print("\nConfusion matrix (rows=gold, columns=extracted):")
     print("gold\\extracted," + ",".join(CATEGORIES))
     for category in CATEGORIES:
         print(category + "," + ",".join(str(matrix[category][pred]) for pred in CATEGORIES))
     print(f"\nEditable finding grades: {args.csv} (use supported, partially supported, unsupported, or contradicted)")
+    args.metrics.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    print(f"Metrics saved to: {args.metrics}")
 
 
 if __name__ == "__main__":

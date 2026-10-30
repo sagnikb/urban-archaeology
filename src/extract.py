@@ -10,6 +10,7 @@ from typing import Literal
 
 import pymupdf as fitz
 from ollama import chat
+from ollama import Client
 from pydantic import BaseModel
 
 
@@ -329,6 +330,8 @@ def build_context(
     context_chars=2000,
 ):
     """
+    # More faithful attribution/alternative labels are expected only when
+    # the source explicitly names them; never create labels for convenience.
     Retrieve neighboring PDF pages.
 
     Does not include the target page.
@@ -514,7 +517,7 @@ def main(
     except PackageNotFoundError:
         ollama_version = "unknown"
     try:
-        ollama_server_version = chat.__self__.version()
+        ollama_server_version = Client().version().get("version", "unavailable")
     except Exception:
         ollama_server_version = "unavailable"
     try:
@@ -538,6 +541,7 @@ def main(
                      "context_chars": context_chars, "temperature": 0, "seed": SEED,
                      "num_ctx": 8192},
     }
+    errors = []
 
     with fitz.open(path) as pdf:
         start = start_page - 1
@@ -548,9 +552,11 @@ def main(
 
         for i in range(start, end):
             page = i + 1
-            printed_page_label = pdf[i].get_label() or ""
-
             target_text = get_page_text(pdf, i)
+            footer = " ".join(page_word[4] for page_word in pdf[i].get_text("words")
+                              if page_word[1] > pdf[i].rect.height * 0.88)
+            label_match = re.search(r"\bPage\s+(\d+-\d+)\b", footer, re.IGNORECASE)
+            printed_page_label = label_match.group(1) if label_match else (pdf[i].get_label() or "")
             target_text = target_text[:max_chars]
 
             print(
@@ -597,15 +603,18 @@ def main(
 
             except Exception as error:
                 print(f"  Error on page {page}: {error}")
+                errors.append({"page": page, "error": str(error)})
 
             # Save progress after every page.
             output.write_text(
-                json.dumps({"run_details": run_details, "findings": results}, indent=2, ensure_ascii=False),
+                json.dumps({"run_details": run_details, "findings": results, "errors": errors,
+                            "status": "incomplete" if errors else "complete"}, indent=2, ensure_ascii=False),
                 encoding="utf-8",
             )
             verified_output.write_text(
                 json.dumps(
-                    {"run_details": run_details, "findings": [item for item in results if item["quote_verified"]]},
+                    {"run_details": run_details, "findings": [item for item in results if item["quote_verified"]],
+                     "errors": errors, "status": "incomplete" if errors else "complete"},
                     indent=2,
                     ensure_ascii=False,
                 ),
