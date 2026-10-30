@@ -364,6 +364,7 @@ def analyze(
     filename,
     page,
     printed_page_label,
+    seed=SEED,
     parse_mode="single",
     context_text="",
 ):
@@ -419,7 +420,7 @@ def analyze(
         format=Extraction.model_json_schema(),
         options={
             "temperature": 0,
-            "seed": SEED,
+            "seed": seed,
             "num_ctx": 8192,
         },
     )
@@ -473,6 +474,7 @@ def main(
     max_chars=5000,
     context_chars=2000,
     run_name=None,
+    seed=SEED,
 ):
     """
     Run PDF extraction directly from VS Code.
@@ -509,6 +511,7 @@ def main(
     run_name = run_name or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     output = Path(f"outputs/findings_{parse_mode}_{run_name}.json")
     verified_output = Path(f"outputs/findings_{parse_mode}_{run_name}_verified.json")
+    error_output = Path(f"outputs/run_error_{parse_mode}_{run_name}.json")
     output.parent.mkdir(parents=True, exist_ok=True)
 
     results = []
@@ -538,7 +541,7 @@ def main(
         "git_commit": git_commit,
         "settings": {"start_page": start_page, "pages": pages, "parse_mode": parse_mode,
                      "context_pages": context_pages, "max_chars": max_chars,
-                     "context_chars": context_chars, "temperature": 0, "seed": SEED,
+                     "context_chars": context_chars, "temperature": 0, "seed": seed,
                      "num_ctx": 8192},
     }
     errors = []
@@ -585,6 +588,7 @@ def main(
                     filename=path.name,
                     page=page,
                     printed_page_label=printed_page_label,
+                    seed=seed,
                     parse_mode=parse_mode,
                     context_text=context_text,
                 )
@@ -604,22 +608,25 @@ def main(
             except Exception as error:
                 print(f"  Error on page {page}: {error}")
                 errors.append({"page": page, "error": str(error)})
+                error_output.write_text(
+                    json.dumps({"run_details": run_details, "status": "failed", "errors": errors},
+                               indent=2, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+                raise RuntimeError(f"Extraction failed on PDF page {page}; details saved to {error_output}") from error
 
-            # Save progress after every page.
-            output.write_text(
-                json.dumps({"run_details": run_details, "findings": results, "errors": errors,
-                            "status": "incomplete" if errors else "complete"}, indent=2, ensure_ascii=False),
-                encoding="utf-8",
-            )
-            verified_output.write_text(
-                json.dumps(
-                    {"run_details": run_details, "findings": [item for item in results if item["quote_verified"]],
-                     "errors": errors, "status": "incomplete" if errors else "complete"},
-                    indent=2,
-                    ensure_ascii=False,
-                ),
-                encoding="utf-8",
-            )
+    # Publish normal outputs only after every requested page succeeded.
+    output.write_text(
+        json.dumps({"run_details": run_details, "findings": results, "errors": [], "status": "complete"},
+                   indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    verified_output.write_text(
+        json.dumps({"run_details": run_details,
+                    "findings": [item for item in results if item["quote_verified"]],
+                    "errors": [], "status": "complete"}, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     print(f"\nTotal findings: {len(results)}")
     print(f"Saved to: {output}")

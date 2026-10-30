@@ -12,7 +12,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g01",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Sub-project option for a station connection, not a D2 alignment alternative. Page states the connection is not evaluated in the AA/DEIS."
   },
@@ -29,7 +29,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g02",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Same scope caveat as the at-grade option."
   },
@@ -46,7 +46,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g03",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Same scope caveat as the at-grade option."
   },
@@ -63,7 +63,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g04",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Delivery alternatives, not design alternatives."
   },
@@ -80,7 +80,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g05",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Objective of a sub-element, not of the D2 project as a whole."
   },
@@ -97,7 +97,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g06",
     "epistemic_status": "assumption",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Key test item: an explicit organizational assumption."
   },
@@ -114,7 +114,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g07",
     "epistemic_status": "procedure",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B4; B4a",
     "annotator_note": "Shares a sentence with the assumption finding but states a distinct claim (the exclusion). Any extraction labelling the connection options as evaluated alternatives conflicts with this."
   },
@@ -131,7 +131,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g08",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "B7",
     "annotator_note": "Schema gap: no category for an alternative's assessed performance. Criterion is implied by the comparison, so partly inferred. Sentence begins mid-page; earlier part of the comparison is on PDF page 90."
   },
@@ -182,7 +182,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g11",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "",
     "annotator_note": "Borderline: constrains the process more than the options available. Accept either constraint or no finding."
   },
@@ -199,7 +199,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g12",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "",
     "annotator_note": ""
   },
@@ -216,7 +216,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g13",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "",
     "annotator_note": ""
   },
@@ -233,7 +233,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g14",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "",
     "annotator_note": ""
   },
@@ -250,7 +250,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g15",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "",
     "annotator_note": "Affordability links to the funding constraint. Kept separate from cost comparison."
   },
@@ -267,7 +267,7 @@
     "support_grade": "supported",
     "finding_id": "p091-g16",
     "epistemic_status": "stated fact",
-    "attributed_to": "DART (study document)",
+    "attributed_to": "DART",
     "refers_to_alternative": "",
     "annotator_note": ""
   }
